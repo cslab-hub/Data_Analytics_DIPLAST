@@ -7,7 +7,7 @@ def return_homepage():
     image = Image.open('images/logo.jpeg')
     st.image(image, use_column_width=True)
 
-    st.title('Welcome to the Data Analytics Tool!.')
+    st.title('HalloWelcome to the Data Analytics Tool!.')
     st.markdown(
         """
         ## The Data Analytics tool consists of several tools that analyse a part of your data.\n
