@@ -9,6 +9,7 @@ from matrix_profile import *
 from comparison import *
 from preprocessing import *
 from forecast import *
+from sequencing_classifier import *
 # from columnnames import *
 # from texteditors import *
 # from number_of_variables import *
@@ -56,7 +57,7 @@ st.sidebar.header("Each tool performs a different task.")
 
 add_selectbox = st.sidebar.radio(
     "Choose a chapter:",
-    ("Home",'Preprocessing',"Matrix Profile",'Comparison',"Forecast"),format_func= lambda x: 'Home' if x == 'Home' else f"{x}"
+    ("Home",'Preprocessing',"Matrix Profile",'Comparison',"Forecast","Classifier"),format_func= lambda x: 'Home' if x == 'Home' else f"{x}"
     
 )                                                                                                                       
 
@@ -78,6 +79,9 @@ if add_selectbox == 'Preprocessing':
 
 if add_selectbox == 'Forecast':
     return_forecast()
+
+if add_selectbox == 'Classifier':
+    return_classifier()
     
 select_block_container_style()
 # This removes the copyright of how the page is made

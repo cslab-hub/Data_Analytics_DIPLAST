@@ -25,15 +25,14 @@ data = data_loader()
 
 
 def return_matrix_profile():
-    st.title('Matrix Profile')
-    col1, col2, col3 = st.columns(3)
-
-    with col2:
-        option = st.selectbox(
-            'Which dataset do you want to view?',
-            (i for i in data), key=1)
-        dataset =  pd.read_csv(option)
     
+
+    st.title('Matrix Profile')
+    option = st.selectbox(
+        'Which dataset do you want to view?',
+        (i for i in data), key=1)
+    dataset =  pd.read_csv(option)
+
 
     def motif_mp_individual_plot(data, mp_length=3):
         data = data.astype(float)
