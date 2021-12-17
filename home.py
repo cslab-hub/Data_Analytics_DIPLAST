@@ -7,12 +7,43 @@ def return_homepage():
     image = Image.open('images/logo.jpeg')
     st.image(image, use_column_width=True)
 
-    st.title('HalloWelcome to the Data Analytics Tool!.')
+    st.title('Welcome to the Data Analytics Tool!')
     st.markdown(
         """
-        ## The Data Analytics tool consists of several tools that analyse a part of your data.\n
+        ## The Data Analytics tool consists of several modules that analyse parts of your dataset.\n 
+        ### It is of great importance that the data used in this tool is properly validated.\n
+        ### For validating the data, we advise you to check our data validation tool that can be accessed via the following link; https://share.streamlit.io/cslab-hub/data_validation_diplast/main/main.py.\n
         **👈 Select a tool from the dropdown menu on the left**""")
     
+
+    st.markdown(
+        """
+        ### Usage of the Data Analytics tool:\n
+        #### As can be seen on the left of this page, several different applications can be accessed for analysing your data. However, to actually analyse the data, a datafile should be placed within the "data" folder of this package. 
+
+
+
+        """)
+
+    st.markdown(
+        """
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+
+        """)
+
+
+
     st.error("DISCLAIMER")
     st.write("""
              15. Disclaimer of Warranty.

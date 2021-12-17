@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from PIL import Image 
+import pathlib
 
 import os 
 import stumpy
@@ -10,19 +11,28 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 def data_loader():
+    found_files = []
+    found_files2 = []
     cwd = os.getcwd()
     for roots, dirs, files in sorted(os.walk(cwd)):
         for filename in sorted(files):
             if filename.endswith(".csv"):
-                print(filename)
-                data = pd.read_csv(os.path.join(roots,filename))
-                return data
+                found_files.append(os.path.join(roots,filename))
+    return found_files
 
 data = data_loader()
 
+
+
 def return_matrix_profile():
     st.title('Matrix Profile')
+    col1, col2, col3 = st.columns(3)
 
+    with col2:
+        option = st.selectbox(
+            'Which dataset do you want to view?',
+            (i for i in data), key=1)
+        dataset =  pd.read_csv(option)
     
 
     def motif_mp_individual_plot(data, mp_length=3):
@@ -71,12 +81,14 @@ def return_matrix_profile():
     
     if length > 2:
         
-        mp_list = motif_mp_individual_plot(data, mp_length=length)
+        mp_list = motif_mp_individual_plot(dataset, mp_length=length)
         print('a calculation is done')
         st.pyplot(mp_list)
     else:
         st.write('choose a number')
         
+
+    # data = pd.read_csv(option)
 
     def mp_individual_plot_anomaly(data, mp_length):
         data = data.astype(float)
@@ -121,10 +133,10 @@ def return_matrix_profile():
     
     length2 = st.slider(label='choose length',min_value=10, max_value=50, value=10, step=10, key=3)
     
-    
+
     if length2 > 2:
         
-        mp_list, found_indexes = mp_individual_plot_anomaly(data, mp_length=length2)
+        mp_list, found_indexes = mp_individual_plot_anomaly(dataset, mp_length=length2)
         print('a calculation is done')
         st.write(f'value indexes are: {found_indexes}')
         st.pyplot(mp_list)
