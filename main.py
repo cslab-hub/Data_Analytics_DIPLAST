@@ -9,7 +9,7 @@ from matrix_profile import *
 from comparison import *
 from preprocessing import *
 from forecast import *
-from sequencing_classifier import *
+from ts_classifier import *
 # from columnnames import *
 # from texteditors import *
 # from number_of_variables import *

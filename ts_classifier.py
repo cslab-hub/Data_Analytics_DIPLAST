@@ -56,7 +56,7 @@ data_files = data_loader()
 def return_classifier():
 
 
-    st.title('Sequence your data for classification')
+    st.title('Choose your data for classification')
 
     st.markdown("""
         One of the most used applications in the field of Data Science is Classification. The idea behind classification is to predict the class, also called target variable, of the given data points. 
@@ -104,34 +104,34 @@ def return_classifier():
 
 
 
-    def slice_data(time_series,seq_len):
-        time_series = np.array(time_series)
-        data = np.zeros((0,seq_len,time_series.shape[1]))
+    # def slice_data(time_series,seq_len):
+    #     time_series = np.array(time_series)
+    #     data = np.zeros((0,seq_len,time_series.shape[1]))
 
-        idx_last = -(time_series.shape[0] % seq_len)
-        if idx_last < 0:    
-            clips = time_series[:idx_last].reshape(-1, seq_len,time_series.shape[1])
-        else:
-            clips = time_series[idx_last:].reshape(-1, seq_len,time_series.shape[1])                
+    #     idx_last = -(time_series.shape[0] % seq_len)
+    #     if idx_last < 0:    
+    #         clips = time_series[:idx_last].reshape(-1, seq_len,time_series.shape[1])
+    #     else:
+    #         clips = time_series[idx_last:].reshape(-1, seq_len,time_series.shape[1])                
 
-        # Partition train and test set in separate arrays
-        #print(n)
-        data = np.vstack((data, clips))
-        print(data.shape)
+    #     # Partition train and test set in separate arrays
+    #     #print(n)
+    #     data = np.vstack((data, clips))
+    #     print(data.shape)
 
-        return(data)
+    #     return(data)
 
 
-    length = st.slider(label='choose length',min_value=0, max_value=len(dataset), value=0, step=5, key=2)
+    # length = st.slider(label='choose length',min_value=0, max_value=len(dataset), value=0, step=5, key=2)
 
     
-    if length < 2:
-        data2 = np.array(dataset)
-        st.write(f"the shape your object is {data2.shape}, which will be used to train our classifier.")
-    else:
-        data2 = slice_data(dataset, seq_len=length)
-        print('a calculation is done')
-        st.write(f"the shape your object is {data2.shape}, which will be used to train our classifier.")
+    # if length < 2:
+    #     data2 = np.array(dataset)
+    #     st.write(f"the shape your object is {data2.shape}, which will be used to train our classifier.")
+    # else:
+    #     data2 = slice_data(dataset, seq_len=length)
+    #     print('a calculation is done')
+    #     st.write(f"the shape your object is {data2.shape}, which will be used to train our classifier.")
 
 
 
@@ -139,7 +139,7 @@ def return_classifier():
         'Which classifier do you want to use?',
         ('K Nearest Neighbors', 'Random Forest'), key= 1)
         # (i for i in classifier_list), key=1)
-    x_train, x_test, y_train, y_test= train_test_split(data2, target_data,
+    x_train, x_test, y_train, y_test= train_test_split(dataset, target_data,
                                                    test_size= 0.2,
                                                    shuffle= True, #shuffle the data to avoid bias
                                                    random_state= 0)
