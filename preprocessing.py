@@ -35,7 +35,7 @@ def return_preprocessing():
     st.title('Preprocess your data')
     option = st.selectbox(
             'Which dataset do you want to view?',
-            (i for i in data), key=1)
+            (i for i in data), format_func= lambda x:  str(x).split('/')[-1], key=1)
     dataset = pd.read_csv(option)
     
     for col in dataset.columns:
@@ -72,7 +72,7 @@ def return_preprocessing():
 
     option2 = st.selectbox(
             'Which action do you want to take?',
-            ('Delete','Infer'), key=2)
+            ('Select action','Delete','Infer'), key=2)
     
     if option2 == 'Delete':
         st.write('Result when deleting the rows with faulthy data')

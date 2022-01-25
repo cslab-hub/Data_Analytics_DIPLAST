@@ -30,7 +30,7 @@ def return_matrix_profile():
     st.title('Matrix Profile')
     option = st.selectbox(
         'Which dataset do you want to view?',
-        (i for i in data), key=1)
+        (i for i in data), format_func= lambda x:  str(x).split('/')[-1], key=1)
     dataset =  pd.read_csv(option)
 
 
@@ -75,7 +75,8 @@ def return_matrix_profile():
         return(fig)
 
 
-    length = st.slider(label='choose length',min_value=10, max_value=50, value=10, step=10, key=2)
+    # length = st.slider(label='choose length',min_value=10, max_value=50, value=10, step=10, key=2)
+    length = st.slider(label='choose length for Motif discovery',min_value=0, max_value=len(dataset), value=0, step=int(len(dataset)/10), key=2)
     
     
     if length > 2:
@@ -130,7 +131,8 @@ def return_matrix_profile():
                 axs[0 + 1].axvline(x=idx, linestyle="dashed", c='black')
         return fig, discord_idx
     
-    length2 = st.slider(label='choose length',min_value=10, max_value=50, value=10, step=10, key=3)
+    
+    length2 = st.slider(label='choose length for Anomaly Detection',min_value=0, max_value=len(dataset), value=0, step=int(len(dataset)/10), key=3)
     
 
     if length2 > 2:

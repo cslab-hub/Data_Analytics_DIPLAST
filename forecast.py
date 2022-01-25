@@ -48,7 +48,7 @@ def return_forecast():
     with col2:
         option = st.selectbox(
                 'Which dataset do you want to view?',
-                (i for i in data), key=1)
+                (i for i in data),format_func= lambda x:  str(x).split('/')[-1], key=1)
         dataset = pd.read_csv(option)
 
         option2 = st.selectbox(

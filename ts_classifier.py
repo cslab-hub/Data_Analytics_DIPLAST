@@ -70,7 +70,7 @@ def return_classifier():
 
     option = st.selectbox(
         'Which dataset do you want to use for your classification problem?',
-        (i for i in data_files), key=1)
+        (i for i in data_files),format_func= lambda x:  str(x).split('/')[-1], key=1)
     dataset = pd.read_csv(option)
 
     st.table( dataset.head(3))
@@ -79,7 +79,7 @@ def return_classifier():
 
 
     option2 = st.selectbox(
-        'Which variable resprents the labels for the given dataset? We will separate this variable from the rest of the dataset ',
+        'Which variable resprents the labels for the given dataset? We will separate this variable from the rest of the dataset ', 
         (i for i in dataset.columns), key=1)
     target_data = dataset[option2]
     dataset = dataset.drop(columns = [option2])
@@ -137,7 +137,7 @@ def return_classifier():
 
     option3 = st.selectbox(
         'Which classifier do you want to use?',
-        ('K Nearest Neighbors', 'Random Forest'), key= 1)
+        ('Select algorithm','K Nearest Neighbors', 'Random Forest'), key= 1)
         # (i for i in classifier_list), key=1)
     x_train, x_test, y_train, y_test= train_test_split(dataset, target_data,
                                                    test_size= 0.2,
@@ -149,6 +149,7 @@ def return_classifier():
     scaled_x_train = scaler.fit_transform(x_train)
     scaled_x_test = scaler.transform(x_test)
     st.write(f'training set size: {x_train.shape[0]} samples \ntest set size: {x_test.shape[0]} samples')
+
     
     if option3 == "K Nearest Neighbors":
         k_range = list(range(1,50))
