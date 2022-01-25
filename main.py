@@ -1,5 +1,6 @@
 import streamlit as st
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Di-Plast Data Analytics Tool ",layout="wide")
+# st.set_page_config(layout="wide")
 import pandas as pd
 import numpy as np
 from PIL import Image 
@@ -10,9 +11,11 @@ from comparison import *
 from preprocessing import *
 from forecast import *
 from ts_classifier import *
+import base64
 # from columnnames import *
 # from texteditors import *
 # from number_of_variables import *
+
 
 def select_block_container_style():
     max_width_100_percent = st.sidebar.checkbox("Max-width: 100%?", False)
@@ -26,6 +29,21 @@ def select_block_container_style():
         max_width_100_percent,
 
     )
+
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+def get_img_with_href(local_img_path, target_url,width="1"):
+    img_format = os.path.splitext(local_img_path)[-1].replace('.', '')
+    bin_str = get_base64_of_bin_file(local_img_path)
+    html_code = f'''
+        <a href="{target_url}" target="_blank">
+            <img style="width: {width}%" src="data:image/{img_format};base64,{bin_str} " />
+        </a>'''
+    return html_code
+
 
 
 def _set_block_container_style(
@@ -48,18 +66,22 @@ def _set_block_container_style(
         unsafe_allow_html=True,
     )
     
-    
-st.sidebar.title("Select Tool")
-st.sidebar.header("Each tool performs a different task.")
+Logo_html = get_img_with_href('di-plast_Logo.PNG', 'https://www.nweurope.eu/projects/project-search/di-plast-digital-circular-economy-for-the-plastics-industry/',width="90")    
+st.sidebar.markdown(Logo_html, unsafe_allow_html=True)
+st.sidebar.title("Select a Module")
+# st.sidebar.header("Each tool performs a different task.")
+
 
 
 
 
 add_selectbox = st.sidebar.radio(
-    "Choose a chapter:",
-    ("Home",'Preprocessing',"Matrix Profile",'Comparison',"Forecast","Classifier"),format_func= lambda x: 'Home' if x == 'Home' else f"{x}"
+    "Choose one of the analytics options:",
+    ("Home",'Preprocessing',"Matrix Profile",'Comparison',"Forecast","Classifier"),format_func= lambda x: 'Home' if x == 'Home' else f"{x}",help="Please select one of the options that aligns with your analytics needs."
     
-)                                                                                                                       
+)         
+
+
 
 
 #! Home page
@@ -92,3 +114,9 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
+
+JADS_logo = get_img_with_href('JADS_logo.png', 'https://www.jads.nl',width="90")
+st.sidebar.markdown(JADS_logo, unsafe_allow_html=True)
+st.sidebar.caption("[Bug reports and suggestions welcome ](mailto:j.o.d.hoogen@jads.nl)")
