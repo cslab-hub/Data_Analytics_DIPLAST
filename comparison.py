@@ -37,6 +37,8 @@ def return_comparison():
         
         option = st.selectbox(
             'Which dataset do you want to view?',
+            # ['Select dataset',(i for i in data)], format_func= lambda x:  str(x).split('/')[-1], key=1)
+
             (i for i in data), format_func= lambda x:  str(x).split('/')[-1], key=1)
         plot = pd.read_csv(option)
         print(plot)

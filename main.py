@@ -11,6 +11,7 @@ from comparison import *
 from preprocessing import *
 from forecast import *
 from ts_classifier import *
+from final_report import *
 import base64
 # from columnnames import *
 # from texteditors import *
@@ -77,7 +78,7 @@ st.sidebar.title("Select a Module")
 
 add_selectbox = st.sidebar.radio(
     "Choose one of the analytics options:",
-    ("Home",'Preprocessing',"Matrix Profile",'Comparison',"Forecast","Classifier"),format_func= lambda x: 'Home' if x == 'Home' else f"{x}",help="Please select one of the options that aligns with your analytics needs."
+    ("Home",'Preprocessing',"Matrix Profile",'Comparison',"Forecast","Classifier",'Final Data Report'),format_func= lambda x: 'Home' if x == 'Home' else f"{x}",help="Please select one of the options that aligns with your analytics needs."
     
 )         
 
@@ -104,6 +105,9 @@ if add_selectbox == 'Forecast':
 
 if add_selectbox == 'Classifier':
     return_classifier()
+
+if add_selectbox == 'Final Data Report':
+    return_report()
     
 select_block_container_style()
 # This removes the copyright of how the page is made

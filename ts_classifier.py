@@ -170,7 +170,15 @@ def return_classifier():
 
     cv_classifier = GridSearchCV(estimator=classifier, param_grid=param_grid, cv= 5, verbose = 100, n_jobs = -1)
     cv_classifier.fit(scaled_x_train, y_train)
-
+    feature_importance = cv_classifier.best_estimator_.feature_importances_
+    f_i = list(zip(features_dataset,feature_importance)) 
+    f_i.sort(key = lambda x : x[1])
+    fig2, ax2 = plt.subplots()
+    ax2 =  plt.barh([x[0] for x in f_i],[x[1] for x in f_i]) 
+    ax2.set_yticklabels(fontsize=16)
+    st.pyplot(fig2)
+    
+    
     sorted(cv_classifier.cv_results_.keys())
     cv_best = cv_classifier.best_estimator_
     predictions = cv_best.predict(scaled_x_test)
