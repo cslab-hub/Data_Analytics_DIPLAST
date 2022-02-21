@@ -28,6 +28,7 @@ def data_loader():
     return found_files
 
 data = data_loader()
+
 # print(data)
 def return_comparison():
 
@@ -40,12 +41,16 @@ def return_comparison():
             # ['Select dataset',(i for i in data)], format_func= lambda x:  str(x).split('/')[-1], key=1)
 
             (i for i in data), format_func= lambda x:  str(x).split('/')[-1], key=1)
+        # if option == "Select a Dataset":
+        #     st.stop()
         plot = pd.read_csv(option)
         print(plot)
 
         option2 = st.selectbox(
             'Which variable do you want to view?',
             (i for i in plot.columns), key=2)
+        # if option2 == "Select a Dataset":
+        #     st.stop()
         # fig = plt.plot(plot[option2])
         
         fig, ax = plt.subplots()

@@ -21,7 +21,7 @@ def data_loader():
     return found_files
 
 data = data_loader()
-
+data.insert(0,'Select a Dataset')
 
 
 def return_matrix_profile():
@@ -31,6 +31,8 @@ def return_matrix_profile():
     option = st.selectbox(
         'Which dataset do you want to view?',
         (i for i in data), format_func= lambda x:  str(x).split('/')[-1], key=1)
+    if option == "Select a Dataset":
+        st.stop()
     dataset =  pd.read_csv(option)
 
 

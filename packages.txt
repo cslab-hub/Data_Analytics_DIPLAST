@@ -8,3 +8,6 @@ stumpy
 pmdarima
 openpyxl
 seaborn
+streamlit-pandas-profiling
+pandas-profiling
+statsmodels

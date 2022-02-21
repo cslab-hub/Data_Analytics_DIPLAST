@@ -28,6 +28,7 @@ def data_loader():
     return found_files
 
 data = data_loader()
+data.insert(0,'Select a Dataset')
 
 def return_preprocessing():
 
@@ -36,7 +37,12 @@ def return_preprocessing():
     option = st.selectbox(
             'Which dataset do you want to view?',
             (i for i in data), format_func= lambda x:  str(x).split('/')[-1], key=1)
+    if option == "Select a Dataset":
+        st.stop()
+    
     dataset = pd.read_csv(option)
+
+
     
     for col in dataset.columns:
         dataset.loc[dataset.sample(frac=0.1, random_state=3).index, col] = np.nan

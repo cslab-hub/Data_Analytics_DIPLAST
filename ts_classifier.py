@@ -52,6 +52,7 @@ def data_loader():
     return found_files
 
 data_files = data_loader()
+data_files.insert(0,'Select a Dataset')
 # print(data)
 def return_classifier():
 
@@ -71,6 +72,9 @@ def return_classifier():
     option = st.selectbox(
         'Which dataset do you want to use for your classification problem?',
         (i for i in data_files),format_func= lambda x:  str(x).split('/')[-1], key=1)
+
+    if option == "Select a Dataset":
+        st.stop()
     dataset = pd.read_csv(option)
 
     st.table( dataset.head(3))
