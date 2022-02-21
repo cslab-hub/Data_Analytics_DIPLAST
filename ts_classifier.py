@@ -170,6 +170,7 @@ def return_classifier():
             'n_estimators': range(1,120,10),
             'max_features': ['auto', 'sqrt', 'log2']
             }
+        features_dataset = dataset.columns
 
 
     cv_classifier = GridSearchCV(estimator=classifier, param_grid=param_grid, cv= 5, verbose = 100, n_jobs = -1)
@@ -179,7 +180,7 @@ def return_classifier():
     f_i.sort(key = lambda x : x[1])
     fig2, ax2 = plt.subplots()
     ax2 =  plt.barh([x[0] for x in f_i],[x[1] for x in f_i]) 
-    ax2.set_yticklabels(fontsize=16)
+    ax2 = plt.tick_params(axis="y", labelsize=8)
     st.pyplot(fig2)
     
     
