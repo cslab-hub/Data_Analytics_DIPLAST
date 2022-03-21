@@ -413,5 +413,4 @@ def return_EPA():
             '_'.join(str(trilux_production.index[iidx]).strip().split(' '))), 
         mime="image/png")
 
-    # cd '/home/daniel/Nextcloud/Di-Plast Database 2 (JADS + UOS)/Trilux/data_analytics_test'
     # streamlit run dashboard_drafting.py --server.headless true
