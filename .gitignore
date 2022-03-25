@@ -134,3 +134,8 @@ data/
 # Extra
 preprocess_trilux.py
 preprocess_trilux_epa.py
+data/iris.csv
+data/dataset.csv
+data/combined_features.csv
+data/combined_features_full.csv
+data/paper_mill.csv

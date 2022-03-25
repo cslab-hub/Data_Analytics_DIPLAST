@@ -87,9 +87,9 @@ def return_EPA():
     ## Settings 
     '''
 
-    trilux_production = get_data()
+    dataset_production = get_data()
 
-    target_options = list(trilux_production.columns)
+    target_options = list(dataset_production.columns)
     target_options.insert(0, 'Choose the target variable')
     target = st.selectbox('Target variable: ', target_options)
 
@@ -98,7 +98,7 @@ def return_EPA():
 
     target_nominal = False
 
-    if trilux_production.loc[:,target].dtype == 'object' or trilux_production.loc[:,target].dtype == 'bool' or trilux_production.loc[:,target].dtype.name == 'category':
+    if dataset_production.loc[:,target].dtype == 'object' or dataset_production.loc[:,target].dtype == 'bool' or dataset_production.loc[:,target].dtype.name == 'category':
 
         target_nominal = True
 
@@ -106,7 +106,7 @@ def return_EPA():
 
     if target_nominal:
 
-        value_options = list(np.unique(trilux_production[target]))
+        value_options = list(np.unique(dataset_production[target]))
         value_options.insert(0, 'Choose the target value')
         value = st.selectbox('Target value: ', value_options)
 
@@ -133,7 +133,7 @@ def return_EPA():
     @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
     def get_subgroups():
 
-        return sd4py.discover_subgroups(trilux_production, target, target_value=value, qf=qf, k=100, minsize=minsize)
+        return sd4py.discover_subgroups(dataset_production, target, target_value=value, qf=qf, k=100, minsize=minsize)
 
     subgroups = get_subgroups()
 
@@ -142,19 +142,19 @@ def return_EPA():
 
         frac = 1.0
 
-        if len(trilux_production) > 13747: ## 13747 / log_2(l3747) = 1000
+        if len(dataset_production) > 13747: ## 13747 / log_2(l3747) = 1000
 
-            frac = 1 / np.log2(len(trilux_production))
+            frac = 1 / np.log2(len(dataset_production))
 
         else:
 
-            frac = min(frac, 1000 / len(trilux_production))
+            frac = min(frac, 1000 / len(dataset_production))
 
         if target_nominal:
 
             subgroups_bootstrap = subgroups.to_df().merge(
                 sd4py_extra.confidence_precision_recall_f1(subgroups, 
-                                                        trilux_production, 
+                                                        dataset_production, 
                                                         number_simulations=100,
                                                         frac=frac
                                                         )[1], 
@@ -166,7 +166,7 @@ def return_EPA():
 
             subgroups_bootstrap = subgroups.to_df().merge(
                 sd4py_extra.confidence_hedges_g(subgroups, 
-                                                trilux_production, 
+                                                dataset_production, 
                                                 number_simulations=100)[1], 
                 on="pattern")
 
@@ -194,11 +194,11 @@ def return_EPA():
 
                 overlapping = False
                 
-                indices1 = subgroups[idx1].get_indices(trilux_production)
+                indices1 = subgroups[idx1].get_indices(dataset_production)
 
                 for idx2 in non_overlapping:
                         
-                    indices2 = subgroups[idx2].get_indices(trilux_production)
+                    indices2 = subgroups[idx2].get_indices(dataset_production)
                     
                     if (indices1.intersection(indices2).size / indices1.union(indices2).size) > jaccard_threshold:
 
@@ -257,7 +257,7 @@ def return_EPA():
 
             warnings.simplefilter("ignore")
             
-            return sd4py_extra.confidence_intervals(subgroups_selection, trilux_production)
+            return sd4py_extra.confidence_intervals(subgroups_selection, dataset_production)
 
     results_dict, aggregation_dict = get_conf_int()
 
@@ -303,7 +303,7 @@ def return_EPA():
         fig = plt.figure(dpi=150)
 
         sd4py_extra.jaccard_visualisation(subgroups_selection, 
-                                            trilux_production, 
+                                            dataset_production, 
                                             edges_threshold, 
                                             labels=labels)
 
@@ -346,7 +346,7 @@ def return_EPA():
         fig = plt.figure(dpi = 150)
         fig.suptitle(re.sub('AND', '\nAND',str(chosen_sg)), y=0.95)
         plt.tight_layout()
-        sd4py_extra.subgroup_overview(chosen_sg, trilux_production, axis_padding=50)
+        sd4py_extra.subgroup_overview(chosen_sg, dataset_production, axis_padding=50)
 
         ## Convert to image to display - so that Streamlit doesn't try to resize disasterously. 
 
@@ -360,7 +360,7 @@ def return_EPA():
 
     plt.rcParams["figure.figsize"] = saved_figsize
 
-    if not isinstance(trilux_production.index, pd.DatetimeIndex):
+    if not isinstance(dataset_production.index, pd.DatetimeIndex):
 
         st.stop()
 
@@ -368,7 +368,7 @@ def return_EPA():
     ## Specific subgroup members
     '''
 
-    chosen_member_options = copy.deepcopy(chosen_sg.get_rows(trilux_production).index.tolist())
+    chosen_member_options = copy.deepcopy(chosen_sg.get_rows(dataset_production).index.tolist())
     chosen_member_options.insert(0, 'Choose a subgroup member to inspect')
     chosen_member = st.selectbox('Subgroup member to inspect: ', chosen_member_options)
 
@@ -381,19 +381,19 @@ def return_EPA():
     @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
     def get_most_interesting():
 
-        most_interesting_numeric = sd4py_extra.most_interesting_columns(chosen_sg, trilux_production.drop(columns=chosen_sg.target))[0][:7]
+        most_interesting_numeric = sd4py_extra.most_interesting_columns(chosen_sg, dataset_production.drop(columns=chosen_sg.target))[0][:7]
 
         return most_interesting_numeric.index
 
     most_interesting = get_most_interesting()
 
-    iidx = trilux_production.index.get_loc(chosen_member)
+    iidx = dataset_production.index.get_loc(chosen_member)
 
     fig = plt.figure(dpi = 150)
 
-    sd4py_extra.time_plot(chosen_sg, trilux_production.iloc[iidx-before:iidx+after+1], 
-        trilux_production[target].iloc[iidx-before:iidx+after+1],
-        *[trilux_production[col].iloc[iidx-before:iidx+after+1] for col in most_interesting],
+    sd4py_extra.time_plot(chosen_sg, dataset_production.iloc[iidx-before:iidx+after+1], 
+        dataset_production[target].iloc[iidx-before:iidx+after+1],
+        *[dataset_production[col].iloc[iidx-before:iidx+after+1] for col in most_interesting],
         window_size=1, use_start=True)
 
     fig.suptitle('Variables over time for ({})'.format(str(chosen_sg)), y=1.0, size =14)    
@@ -410,7 +410,7 @@ def return_EPA():
     st.download_button('Save member time plot', img_bytes,
         file_name="{}_time_plot_member_{}.png".format(
             datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), 
-            '_'.join(str(trilux_production.index[iidx]).strip().split(' '))), 
+            '_'.join(str(dataset_production.index[iidx]).strip().split(' '))), 
         mime="image/png")
 
-    # streamlit run dashboard_drafting.py --server.headless true
+    # streamlit run main.py --server.headless true
