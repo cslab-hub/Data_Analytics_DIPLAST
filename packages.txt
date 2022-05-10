@@ -8,3 +8,4 @@ stumpy
 seaborn
 datetime
 csv
+jpype1
