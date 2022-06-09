@@ -82,10 +82,11 @@ def return_EPA():
         
         return data
 
-
+    st.markdown(
     '''
     ## Settings 
     '''
+    )
 
     dataset_production = get_data()
 
@@ -127,9 +128,18 @@ def return_EPA():
 
     qf = {"Larger subgroups":"ps", "Smaller subgroups":"bin"}[qf]
 
+    st.markdown(
     '''
-    ## Top subgroups
+    ## Top patterns
+
+    The table of results shows a list of the best patterns found, along with some measures of quality.
+    For nominal targets, the precision (what proportion of the points selected by the pattern in fact belong to the target group),
+    the recall (how much of the target group is selected by the pattern), and the F1-score (a combination of precision and recall)
+    are provided as extra quality measures. Estimated 5% and 95% confidence intervals are shown. 
+    For numeric targets, the "Hedge's G" measure is shown as an extra quality measure. This gives an indication of how large the 
+    difference is between the points selected by the pattern and the rest of the dataset. Larger numbers indicate a greater difference.
     '''
+    )
     @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
     def get_subgroups():
 
@@ -246,9 +256,16 @@ def return_EPA():
         key='download-csv'
     )
 
+    st.markdown(
     '''
     ## Plotting the distribution of the target value 
+
+    This first visualisation shows the expected variability for the target value, meaning how much it changes across different samples 
+    of measurements. This is depicted through boxes in a box plot, with wider boxes in the x-direction implying greater variability.
+    How many points are selected by each pattern is also shown, with thicker boxes in the vertical direction meaning that
+    a pattern selects a greater number of points on average. 
     '''
+    )
 
     @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
     def get_conf_int():
@@ -291,9 +308,16 @@ def return_EPA():
 
     st.download_button('Save boxplots', img_bytes, file_name="{}_boxplots.png".format(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")), mime="image/png")
 
+    st.markdown(
     '''
-    ## Overlap between subgroups
+    ## Overlap between patterns
+
+    In the second visualisation, patterns are connected to each other by how much their members overlap. 
+    If two patterns select similar subsets of data (also called having similar 'subgroups'), 
+    then they have a strong link between them and appear closer together. 
+    Overall, this visualisation takes the form of a network diagram. 
     '''
+    )
 
     edges_threshold = st.slider("Only draw edges when overlap is greater than: ", 0.0, 1.0, 0.25)
 
@@ -323,15 +347,25 @@ def return_EPA():
 
     st.download_button('Save network diagram', img_bytes, file_name="{}_network_diagram.png".format(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")), mime="image/png")
 
+    st.markdown(
     '''
-    ## Focus on a specific subgroup
+    ## Focus on a specific pattern/subgroup
+
+    At this point, there may be patterns that are particularly interesting. 
+    The EPA tool makes it possible to examine these in more detail. 
+    A visualisation is provided that compares subgroup members (points selected by the pattern) to non-members for one specific pattern. 
+    The target variable, the variables used to define the pattern (selector variables), 
+    and additional variables that are most clearly different between members and non-members are shown. 
+    These respectively appear in the top-left, top-right and bottom panels of the visualisation. 
+    This makes it possible to see additional information about the pattern, and understand more about the circumstances in which the pattern occurs. 
     '''
+    )
 
     chosen_sg_options = copy.deepcopy(labels)
-    chosen_sg_options.insert(0, 'Choose a subgroup to visualise in more detail')
-    chosen_sg = st.selectbox('Subgroup to focus on: ', chosen_sg_options)
+    chosen_sg_options.insert(0, 'Choose a pattern to visualise in more detail')
+    chosen_sg = st.selectbox('Pattern to focus on: ', chosen_sg_options)
 
-    if chosen_sg == 'Choose a subgroup to visualise in more detail':
+    if chosen_sg == 'Choose a pattern to visualise in more detail':
         st.stop()
 
     chosen_sg = subgroups_selection[dict(zip(labels, list(range(10))))[chosen_sg]]
@@ -364,9 +398,18 @@ def return_EPA():
 
         st.stop()
 
+    st.markdown(
     '''
     ## Specific subgroup members
+
+    Finally, if the data comes from a process that happens over time, we can focus on particular moments at which a pattern occurs, 
+    to see what happens to different variables before, during, and after. 
+    After selecting a single pattern, the user of the EPA tool can then select a particular moment when the pattern occurs, 
+    from the drop-down list below. 
+    The target variable is shown, along with the other variables that are most clearly different between subgroup members 
+    and non-members. The moment at which the pattern occurs is indicated by a red rectangle in the background. 
     '''
+    )
 
     chosen_member_options = copy.deepcopy(chosen_sg.get_rows(dataset_production).index.tolist())
     chosen_member_options.insert(0, 'Choose a subgroup member to inspect')
