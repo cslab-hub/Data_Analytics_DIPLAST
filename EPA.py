@@ -133,6 +133,7 @@ def return_EPA():
     ## Top patterns
 
     The table of results shows a list of the best patterns found, along with some measures of quality.
+
     For nominal targets, the precision (what proportion of the points selected by the pattern in fact belong to the target group),
     the recall (how much of the target group is selected by the pattern), and the F1-score (a combination of precision and recall)
     are provided as extra quality measures. Estimated 5% and 95% confidence intervals are shown. 
@@ -260,7 +261,7 @@ def return_EPA():
     '''
     ## Plotting the distribution of the target value 
 
-    This first visualisation shows the expected variability for the target value, meaning how much it changes across different samples 
+    This visualisation shows the expected variability for the target value, meaning how much it changes across different samples 
     of measurements. This is depicted through boxes in a box plot, with wider boxes in the x-direction implying greater variability.
     How many points are selected by each pattern is also shown, with thicker boxes in the vertical direction meaning that
     a pattern selects a greater number of points on average. 
@@ -312,7 +313,7 @@ def return_EPA():
     '''
     ## Overlap between patterns
 
-    In the second visualisation, patterns are connected to each other by how much their members overlap. 
+    In this visualisation, patterns are connected to each other by how much their members overlap. 
     If two patterns select similar subsets of data (also called having similar 'subgroups'), 
     then they have a strong link between them and appear closer together. 
     Overall, this visualisation takes the form of a network diagram. 
@@ -353,7 +354,7 @@ def return_EPA():
 
     At this point, there may be patterns that are particularly interesting. 
     The EPA tool makes it possible to examine these in more detail. 
-    A visualisation is provided that compares subgroup members (points selected by the pattern) to non-members for one specific pattern. 
+    This visualisation compares subgroup members (points selected by the pattern) to non-members for one specific pattern. 
     The target variable, the variables used to define the pattern (selector variables), 
     and additional variables that are most clearly different between members and non-members are shown. 
     These respectively appear in the top-left, top-right and bottom panels of the visualisation. 
@@ -404,7 +405,7 @@ def return_EPA():
 
     Finally, if the data comes from a process that happens over time, we can focus on particular moments at which a pattern occurs, 
     to see what happens to different variables before, during, and after. 
-    After selecting a single pattern, the user of the EPA tool can then select a particular moment when the pattern occurs, 
+    After selecting a single pattern, you can now select a particular moment when the pattern occurs, 
     from the drop-down list below. 
     The target variable is shown, along with the other variables that are most clearly different between subgroup members 
     and non-members. The moment at which the pattern occurs is indicated by a red rectangle in the background. 
