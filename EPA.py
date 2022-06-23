@@ -81,14 +81,167 @@ def return_EPA():
                 pass
         
         return data
+    
+
+    dataset_production = get_data()
+
+    st.markdown(
+    '''
+    ## Type of analysis
+
+    Depending on the type of analysis, different options for how to perform the analysis will be shown. 
+    Please select an option below. 
+
+    *Classification* looks at what makes one class different from others. 
+    For example, distinguishing one particular product from other products, or distinguishing recyclate from virgin material,
+    or distinguishing one type of outcome for a process. More generally, this possible when the target is a non-numeric variable. 
+    *High average* aims to find situations in which there is a high value for some numeric variable. 
+    For example, identifying circumstances in which a quality score, or a physical property, tends to be high. 
+    More generally, this possible when the target is a numeric variable. 
+    *Event detection* tries to understand events in a recording over time.
+    For example, looking for faults or quality issues which occur at specific times. 
+    This option is appropriate when there is a variable indicating when an event occurs. 
+    '''
+    )
+
+    analysis_type = st.radio("Please select the option that best describes the analysis type", 
+        ('Classification', 'High average', 'Event detection', 'Other'))
+
+    if analysis_type == 'Event detection':
+    
+        assert isinstance(dataset_production.index, pd.DatetimeIndex), "Index column could not be interpreted as dates or times."
+
+    st.markdown(
+    '''
+    ## Filtering
+
+    Sometimes it is interesting to focus the analysis only on certain points in the data.
+    To achieve this, filtering is possible. This step is entirely optional.
+    ''')
+
+    filtering = st.checkbox('Would you like to filter the data before analysis?')
+
+    if filtering:
+
+        if isinstance(dataset_production.index, pd.DatetimeIndex):
+
+            st.markdown(
+            '''
+            ### Time selection
+
+            Sometimes it is interesting to focus on a particular period within the data, 
+            for example because you are analysing a manufacturing process and want to focus on the period when
+            production is happening rather than periods of rest. 
+            Here it is possible to provide a start and end time in order to select data to analyse. 
+            A variable from the dataset can be viewed to help with this choice (e.g. a variable representing the state of the system).
+            By default, the entire dataset is selected. 
+            '''
+            )
+
+            preprocessing_column_options = list(dataset_production.columns)
+            preprocessing_column_options.insert(0, 'Variable to display')
+            preprocessing_column = st.selectbox('Variable to visualise to help choosing a time period: ', preprocessing_column_options)
+
+            if preprocessing_column != 'Variable to display':
+
+                if np.issubdtype(dataset_production[preprocessing_column].dtype, np.datetime64) \
+                or   np.issubdtype(dataset_production[preprocessing_column].dtype, np.timedelta64) \
+                or   np.issubdtype(dataset_production[preprocessing_column].dtype, np.number):
+                    plt.scatter(
+                        dataset_production.index.values, 
+                        dataset_production[preprocessing_column]
+                    )
+                else:
+                    plt.scatter(
+                        dataset_production.index.values, 
+                        dataset_production[preprocessing_column].astype(str)
+                    )
+
+                selected_period = st.slider(
+                    'Choose the time period to focus on:',
+                    dataset_production.index.min().floor('h').to_pydatetime(),
+                    dataset_production.index.max().ceil('h').to_pydatetime(),
+                    (dataset_production.index.min().floor('h').to_pydatetime(), dataset_production.index.max().ceil('h').to_pydatetime()),
+                    step=datetime.timedelta(hours=1),
+                    format="DD/MM/YY - hh:00"
+                )
+
+                plt.axvspan(
+                    xmin=selected_period[0], 
+                    xmax=selected_period[1], 
+                    color='tab:green', 
+                    lw=0, 
+                    alpha=1 / 4
+                )
+
+                plt.gcf().set_size_inches(15,3)
+
+                st.pyplot(plt.gcf())
+
+                @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
+                def get_selected_period():
+
+                    return dataset_production[selected_period[0]:selected_period[1]]
+
+                dataset_production = get_selected_period()
+        
+        st.markdown(
+        '''
+        ### Filter on variable
+
+        Here, it is possible to filter based on the value of a variable of choice.
+        The range of values to keep must be provided. Other values will be removed before analysis. 
+        '''
+        )
+        def is_time(x):
+
+            return np.issubdtype(dataset_production[x].dtype, np.datetime64) or np.issubdtype(dataset_production[x].dtype, np.timedelta64) 
+
+        filtering_column_options = [col for col in dataset_production.columns if not is_time(col)]
+        filtering_column_options.insert(0, 'Choose a variable')
+        filtering_column = st.selectbox('Variable to use for filtering: ', filtering_column_options)
+
+        if filtering_column != 'Choose a variable':
+
+            if np.issubdtype(dataset_production[filtering_column].dtype, np.number):
+                min_filtering = st.number_input(
+                    'Only keep values greater than:', 
+                    dataset_production[filtering_column].min(),
+                    dataset_production[filtering_column].max(),
+                    dataset_production[filtering_column].min(),
+                    (dataset_production[filtering_column].max() - dataset_production[filtering_column].min()) / 20
+                )
+                max_filtering = st.number_input(
+                    'Only keep values less than:', 
+                    dataset_production[filtering_column].min(),
+                    dataset_production[filtering_column].max(),
+                    dataset_production[filtering_column].max(),
+                    (dataset_production[filtering_column].max() - dataset_production[filtering_column].min()) / 20
+                )
+
+                @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
+                def get_numeric_filtering():
+
+                    return dataset_production[dataset_production[filtering_column].gt(min_filtering) & dataset_production[filtering_column].lt(max_filtering)]
+
+                dataset_production = get_numeric_filtering()
+
+            else:
+                keep_values = st.multiselect("Select values to keep", np.unique(dataset_production[filtering_column].astype(str).values))
+                
+                @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
+                def get_nonnumeric_filtering():
+
+                    return dataset_production[dataset_production[filtering_column].astype(str).apply(lambda x: x in keep_values)]
+                
+                dataset_production = get_nonnumeric_filtering()
+
 
     st.markdown(
     '''
     ## Settings 
     '''
     )
-
-    dataset_production = get_data()
 
     target_options = list(dataset_production.columns)
     target_options.insert(0, 'Choose the target variable')
@@ -105,12 +258,47 @@ def return_EPA():
 
     value = None
 
+    if analysis_type == 'Event detection':
+    
+        assert target_nominal, "With event detection, the target must be a non-numeric variable indicating when the event occurs."
+
     if target_nominal:
 
         value_options = list(np.unique(dataset_production[target]))
         value_options.insert(0, 'Choose the target value')
         value = st.selectbox('Target value: ', value_options)
 
+    if target_nominal: 
+        if value == 'Choose the target value':
+            st.stop()
+            
+    if analysis_type == 'Event detection':
+    
+        within = st.number_input("(Optionally) also include earlier time points that happened within (number of minutes): ", step=1, value=0)
+
+        if within > 0: 
+
+            @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
+            def get_new_target(data):
+                # Remember to initialise to False!
+                new_target = pd.Series(index=data.index, dtype='bool', name=target)#, name='{}=={} (within {})'.format(target, value, within))
+                new_target[:] = False
+
+                for idx in data.index:
+
+                    if data[target][idx:idx + pd.Timedelta(within, unit='T')].eq(value).any():
+
+                        new_target[idx] = True
+                
+                return dataset_production.drop(columns=[target]).join(new_target)
+            
+            dataset_production = get_new_target(dataset_production)
+            value = True # Remember to change the target value!
+
+    columns_to_ignore = st.multiselect(
+        'Optionally choose columns to ignore (leave blank to use all columns): ', 
+        [col for col in dataset_production.columns if col != target]
+    )
 
     qf_options = ["Larger subgroups", "Smaller subgroups"]
     qf_options.insert(0, 'Choose the quality function')
@@ -120,13 +308,19 @@ def return_EPA():
 
     jaccard_threshold = st.slider("Suppress 'duplicate' subgroups that overlap with previous subgroups by more than: ", 0.0, 1.0, 0.95)
 
-    if target_nominal: 
-        if value == 'Choose the target value':
-            st.stop()
     if qf == 'Choose the quality function':
         st.stop()
 
     qf = {"Larger subgroups":"ps", "Smaller subgroups":"bin"}[qf]
+
+    if columns_to_ignore and len(columns_to_ignore) > 0:
+
+        @st.cache(hash_funcs={pd.DataFrame: id, sd4py.PySubgroupResults:id})
+        def get_drop_columns(data):
+
+            return data.drop(columns=columns_to_ignore)
+
+        dataset_production = get_drop_columns(dataset_production)
 
     st.markdown(
     '''
@@ -396,6 +590,10 @@ def return_EPA():
     plt.rcParams["figure.figsize"] = saved_figsize
 
     if not isinstance(dataset_production.index, pd.DatetimeIndex):
+
+        st.stop()
+    
+    if analysis_type != 'Event detection':
 
         st.stop()
 
