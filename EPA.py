@@ -94,10 +94,10 @@ def return_EPA():
 
     *Classification* looks at what makes one class different from others. 
     For example, distinguishing one particular product from other products, or distinguishing recyclate from virgin material,
-    or distinguishing one type of outcome for a process. More generally, this possible when the target is a non-numeric variable. 
+    or distinguishing one type of outcome for a process. More generally, this is possible when the target is a non-numeric variable. 
     *High average* aims to find situations in which there is a high value for some numeric variable. 
     For example, identifying circumstances in which a quality score, or a physical property, tends to be high. 
-    More generally, this possible when the target is a numeric variable. 
+    More generally, this is possible when the target is a numeric variable. 
     *Event detection* tries to understand events in a recording over time.
     For example, looking for faults or quality issues which occur at specific times. 
     This option is appropriate when there is a variable indicating when an event occurs. 
@@ -271,7 +271,7 @@ def return_EPA():
     if target_nominal: 
         if value == 'Choose the target value':
             st.stop()
-            
+
     if analysis_type == 'Event detection':
     
         within = st.number_input("(Optionally) also include earlier time points that happened within (number of minutes): ", step=1, value=0)
