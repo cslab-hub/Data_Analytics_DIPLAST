@@ -503,7 +503,7 @@ def find_interesting_columns(subgroup, data, use_complement = True, ignore_defau
         
         if column.dtype == 'object' or column.dtype == 'bool' or column.dtype.name == 'category':  ## nominals
 
-            vals, counts = np.unique(column, return_counts=True)
+            vals, counts = np.unique(column.dropna(), return_counts=True)
 
             for value in vals[np.argsort(-counts)][:5]: ## 5 most common values for this variable; each providing a feature-value pair to investigate
                 
